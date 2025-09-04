@@ -91,7 +91,8 @@ function getStatusBadge(status: string) {
   return <Badge className="bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200">{status}</Badge>
 }
 
-function getBatteryIcon(level: number) {
+function getBatteryIcon(level?: number) {
+  if (level === undefined) return <Battery className="w-4 h-4 text-gray-400" />
   if (level > 80) return <Battery className="w-4 h-4 text-green-500 fill-green-500" />
   if (level > 50) return <Battery className="w-4 h-4 text-amber-500 fill-amber-500" />
   if (level > 20) return <Battery className="w-4 h-4 text-orange-500 fill-orange-500" />
@@ -217,17 +218,17 @@ export default function GuardianConsole() {
 
   const filteredAnchors = anchors.filter((anchor) => {
     const matchesSearch =
-      anchor.id.toLowerCase().includes(anchorSearch.toLowerCase()) ||
-      anchor.name.toLowerCase().includes(anchorSearch.toLowerCase()) ||
-      anchor.destination.toLowerCase().includes(anchorSearch.toLowerCase())
+      (anchor.id || "").toLowerCase().includes(anchorSearch.toLowerCase()) ||
+      (anchor.name || "").toLowerCase().includes(anchorSearch.toLowerCase()) ||
+      (anchor.destination || "").toLowerCase().includes(anchorSearch.toLowerCase())
     return matchesSearch
   })
 
   const filteredNavigators = navigators.filter((navigator) => {
     const matchesSearch =
-      navigator.id.toLowerCase().includes(navigatorSearch.toLowerCase()) ||
-      navigator.name.toLowerCase().includes(navigatorSearch.toLowerCase()) ||
-      navigator.targetAnchor.toLowerCase().includes(navigatorSearch.toLowerCase())
+      (navigator.id || "").toLowerCase().includes(navigatorSearch.toLowerCase()) ||
+      (navigator.name || "").toLowerCase().includes(navigatorSearch.toLowerCase()) ||
+      (navigator.targetAnchor || "").toLowerCase().includes(navigatorSearch.toLowerCase())
     return matchesSearch
   })
 
@@ -320,14 +321,14 @@ export default function GuardianConsole() {
                     className="cursor-pointer transition-colors hover:bg-muted/50"
                     onClick={() => setSelectedAnchor(anchor)}
                   >
-                    <TableCell className="font-mono text-xs">{anchor.name}</TableCell>
+                    <TableCell className="font-mono text-xs">{anchor.name || "Unknown"}</TableCell>
                     <TableCell>
-                      <Badge variant="outline">{anchor.destination}</Badge>
+                      <Badge variant="outline">{anchor.destination || "N/A"}</Badge>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center space-x-1">
                         {getBatteryIcon(anchor.battery)}
-                        <span className="text-sm">{anchor.battery}%</span>
+                        <span className="text-sm">{anchor.battery !== undefined ? `${anchor.battery}%` : "--"}</span>
                       </div>
                     </TableCell>
                     <TableCell>{getDistanceErrorBadge(anchor.distanceError)}</TableCell>
@@ -379,18 +380,18 @@ export default function GuardianConsole() {
                     className="cursor-pointer transition-colors hover:bg-muted/50"
                     onClick={() => setSelectedNavigator(navigator)}
                   >
-                    <TableCell className="font-mono text-xs">{navigator.name}</TableCell>
+                    <TableCell className="font-mono text-xs">{navigator.name || "Unknown"}</TableCell>
                     <TableCell>
-                      <Badge variant="outline">{navigator.targetAnchor}</Badge>
+                      <Badge variant="outline">{navigator.targetAnchor || "None"}</Badge>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center space-x-1">
                         {getBatteryIcon(navigator.battery)}
-                        <span className="text-sm">{navigator.battery}%</span>
+                        <span className="text-sm">{navigator.battery !== undefined ? `${navigator.battery}%` : "--"}</span>
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge variant="secondary">{navigator.connectedAnchors}</Badge>
+                      <Badge variant="secondary">{navigator.connectedAnchors || 0}</Badge>
                     </TableCell>
                     <TableCell>{getStatusBadge(navigator.status)}</TableCell>
                   </TableRow>
