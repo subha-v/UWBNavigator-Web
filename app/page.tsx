@@ -200,54 +200,9 @@ export default function GuardianConsole() {
         console.error('Failed to fetch data:', error)
         setConnectionStatus("error")
         
-        // Use mock data when can't connect
-        setAnchors([
-          {
-            id: "akshata@valuenex.com",
-            name: "Akshata's iPhone",
-            destination: "Kitchen",
-            battery: 92,
-            status: "connected",
-            connectedNavigators: 1,
-            measuredDistance: 2.5,
-            groundTruthDistance: 2.3,
-            distanceError: 0.2
-          },
-          {
-            id: "elena@valuenex.com",
-            name: "Elena's iPhone",
-            destination: "Meeting Room",
-            battery: 88,
-            status: "connected",
-            connectedNavigators: 1,
-            measuredDistance: 3.1,
-            groundTruthDistance: 3.0,
-            distanceError: 0.1
-          },
-          {
-            id: "subhavee1@gmail.com",
-            name: "Subha's iPhone",
-            destination: "Window",
-            battery: 95,
-            status: "disconnected",
-            connectedNavigators: 0
-          }
-        ])
-        
-        setNavigators([
-          {
-            id: "navigator1@test.com",
-            name: "Navigator iPhone",
-            targetAnchor: "Kitchen",
-            battery: 78,
-            status: "active",
-            connectedAnchors: 2,
-            distances: {
-              "Kitchen": 2.5,
-              "Meeting Room": 3.1
-            }
-          }
-        ])
+        // Clear data when can't connect - don't show mock data
+        setAnchors([])
+        setNavigators([])
       }
     }
 
@@ -352,7 +307,14 @@ export default function GuardianConsole() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredAnchors.map((anchor) => (
+                {filteredAnchors.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center text-muted-foreground">
+                      {connectionStatus === "connected" ? "No anchors connected" : "Waiting for iOS app connection..."}
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  filteredAnchors.map((anchor) => (
                   <TableRow
                     key={anchor.id}
                     className="cursor-pointer transition-colors hover:bg-muted/50"
@@ -371,7 +333,8 @@ export default function GuardianConsole() {
                     <TableCell>{getDistanceErrorBadge(anchor.distanceError)}</TableCell>
                     <TableCell>{getStatusBadge(anchor.status)}</TableCell>
                   </TableRow>
-                ))}
+                  ))
+                )}
               </TableBody>
             </Table>
           </div>
@@ -403,7 +366,14 @@ export default function GuardianConsole() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredNavigators.map((navigator) => (
+                {filteredNavigators.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center text-muted-foreground">
+                      {connectionStatus === "connected" ? "No navigators connected" : "Waiting for iOS app connection..."}
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  filteredNavigators.map((navigator) => (
                   <TableRow
                     key={navigator.id}
                     className="cursor-pointer transition-colors hover:bg-muted/50"
@@ -424,7 +394,8 @@ export default function GuardianConsole() {
                     </TableCell>
                     <TableCell>{getStatusBadge(navigator.status)}</TableCell>
                   </TableRow>
-                ))}
+                  ))
+                )}
               </TableBody>
             </Table>
           </div>
