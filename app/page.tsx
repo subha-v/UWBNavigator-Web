@@ -180,41 +180,66 @@ export default function GuardianConsole() {
   // Fetch data from multiple iOS devices
   useEffect(() => {
     const fetchData = async () => {
-      // Define multiple device IPs
-      const deviceIPs = [
-        'http://10.1.10.110:8080',  // subhavee1@gmail.com's device
-        'http://10.1.10.163:8080'   // adpatil989@gmail.com's device
+      // Define multiple device IPs and ports to try
+      const devices = [
+        { ip: '10.1.10.110', name: 'subhavee1' },  // subhavee1@gmail.com's device
+        { ip: '10.1.10.163', name: 'adpatil989' },  // adpatil989@gmail.com's device
       ]
+      const ports = [8080, 8081, 8082, 8083]
       
       const allAnchors: Anchor[] = []
       const allNavigators: Navigator[] = []
       let anyConnected = false
       
-      // Fetch from all devices in parallel
-      await Promise.all(deviceIPs.map(async (apiUrl) => {
-        try {
-          // Fetch anchors data
-          const anchorsRes = await fetch(`${apiUrl}/api/anchors`).catch(() => null)
-          if (anchorsRes && anchorsRes.ok) {
-            const anchorsData = await anchorsRes.json()
-            if (Array.isArray(anchorsData)) {
-              allAnchors.push(...anchorsData)
-              anyConnected = true
+      // Try each device with multiple ports
+      for (const device of devices) {
+        let deviceConnected = false
+        
+        for (const port of ports) {
+          if (deviceConnected) break
+          
+          const apiUrl = `http://${device.ip}:${port}`
+          
+          try {
+            // Quick connection test with short timeout
+            const testRes = await fetch(`${apiUrl}/api/status`, { 
+              signal: AbortSignal.timeout(500) 
+            }).catch(() => null)
+            
+            if (testRes && testRes.ok) {
+              // This port works, fetch all data
+              const [anchorsRes, navigatorsRes] = await Promise.all([
+                fetch(`${apiUrl}/api/anchors`).catch(() => null),
+                fetch(`${apiUrl}/api/navigators`).catch(() => null)
+              ])
+              
+              if (anchorsRes && anchorsRes.ok) {
+                const anchorsData = await anchorsRes.json()
+                if (Array.isArray(anchorsData)) {
+                  allAnchors.push(...anchorsData)
+                  anyConnected = true
+                  deviceConnected = true
+                }
+              }
+              
+              if (navigatorsRes && navigatorsRes.ok) {
+                const navigatorsData = await navigatorsRes.json()
+                if (Array.isArray(navigatorsData)) {
+                  allNavigators.push(...navigatorsData)
+                }
+              }
+              
+              console.log(`✅ Connected to ${device.name} on port ${port}`)
             }
+          } catch (error) {
+            // Silent fail, try next port
           }
-
-          // Fetch navigators data
-          const navigatorsRes = await fetch(`${apiUrl}/api/navigators`).catch(() => null)
-          if (navigatorsRes && navigatorsRes.ok) {
-            const navigatorsData = await navigatorsRes.json()
-            if (Array.isArray(navigatorsData)) {
-              allNavigators.push(...navigatorsData)
-            }
-          }
-        } catch (error) {
-          console.error(`Failed to fetch from ${apiUrl}:`, error)
         }
-      }))
+        
+        if (!deviceConnected) {
+          console.log(`❌ Could not connect to ${device.name} on any port`)
+        }
+      }
       
       // Update state with combined data
       setAnchors(allAnchors)
