@@ -48,8 +48,8 @@ interface SmartContract {
   navigatorId: string
 }
 
-// API configuration
-// Multiple device IPs are now hardcoded in the fetchData function
+// API configuration - uses FastAPI server with Bonjour discovery
+// No need for hardcoded IPs - devices are automatically discovered
 
 // Mock contracts data (keeping as is)
 const mockContracts: SmartContract[] = [
@@ -177,75 +177,45 @@ export default function GuardianConsole() {
   const [contractStatusFilter, setContractStatusFilter] = useState("all")
   const [selectedContract, setSelectedContract] = useState<SmartContract | null>(null)
 
-  // Fetch data from multiple iOS devices
+  // Fetch data from FastAPI server
   useEffect(() => {
     const fetchData = async () => {
-      // Define multiple device IPs and ports to try
-      const devices = [
-        { ip: '10.1.10.110', name: 'subhavee1' },  // subhavee1@gmail.com's device
-        { ip: '10.1.10.163', name: 'adpatil989' },  // adpatil989@gmail.com's device
-      ]
-      const ports = [8080, 8081, 8082, 8083]
+      // Get FastAPI server URL from environment or use default
+      const apiUrl = process.env.NEXT_PUBLIC_FASTAPI_URL || 'http://localhost:8000'
       
-      const allAnchors: Anchor[] = []
-      const allNavigators: Navigator[] = []
-      let anyConnected = false
-      
-      // Try each device with multiple ports
-      for (const device of devices) {
-        let deviceConnected = false
+      try {
+        // Fetch aggregated data from FastAPI
+        const response = await fetch(`${apiUrl}/api/all`, {
+          signal: AbortSignal.timeout(2000)
+        })
         
-        for (const port of ports) {
-          if (deviceConnected) break
+        if (response.ok) {
+          const data = await response.json()
           
-          const apiUrl = `http://${device.ip}:${port}`
+          // Update anchors - only devices with role "anchor"
+          const anchorDevices = data.anchors || []
+          setAnchors(anchorDevices)
           
-          try {
-            // Quick connection test with short timeout
-            const testRes = await fetch(`${apiUrl}/api/status`, { 
-              signal: AbortSignal.timeout(500) 
-            }).catch(() => null)
-            
-            if (testRes && testRes.ok) {
-              // This port works, fetch all data
-              const [anchorsRes, navigatorsRes] = await Promise.all([
-                fetch(`${apiUrl}/api/anchors`).catch(() => null),
-                fetch(`${apiUrl}/api/navigators`).catch(() => null)
-              ])
-              
-              if (anchorsRes && anchorsRes.ok) {
-                const anchorsData = await anchorsRes.json()
-                if (Array.isArray(anchorsData)) {
-                  allAnchors.push(...anchorsData)
-                  anyConnected = true
-                  deviceConnected = true
-                }
-              }
-              
-              if (navigatorsRes && navigatorsRes.ok) {
-                const navigatorsData = await navigatorsRes.json()
-                if (Array.isArray(navigatorsData)) {
-                  allNavigators.push(...navigatorsData)
-                }
-              }
-              
-              console.log(`✅ Connected to ${device.name} on port ${port}`)
-            }
-          } catch (error) {
-            // Silent fail, try next port
-          }
+          // Update navigators - only devices with role "navigator"
+          const navigatorDevices = data.navigators || []
+          setNavigators(navigatorDevices)
+          
+          // Update connection status
+          setConnectionStatus(data.connection_count > 0 ? "connected" : "disconnected")
+          setLastUpdated(new Date())
+          
+          console.log(`✅ Connected to FastAPI server - ${data.connection_count} devices online`)
+          console.log(`   Anchors: ${anchorDevices.length}, Navigators: ${navigatorDevices.length}`)
+        } else {
+          console.error('Failed to fetch from FastAPI server')
+          setConnectionStatus("error")
         }
-        
-        if (!deviceConnected) {
-          console.log(`❌ Could not connect to ${device.name} on any port`)
-        }
+      } catch (error) {
+        console.error('Error connecting to FastAPI server:', error)
+        setConnectionStatus("disconnected")
+        setAnchors([])
+        setNavigators([])
       }
-      
-      // Update state with combined data
-      setAnchors(allAnchors)
-      setNavigators(allNavigators)
-      setConnectionStatus(anyConnected ? "connected" : "disconnected")
-      setLastUpdated(new Date())
     }
 
     // Initial fetch
