@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Input } from "@/components/ui/input"
-import { Clock, CheckCircle, XCircle, Loader, Battery, Wifi, WifiOff } from "lucide-react"
+import { Clock, CheckCircle, XCircle, Loader, Battery, Wifi, WifiOff, Activity } from "lucide-react"
 
 // Simplified interfaces to match actual iOS data
 interface Anchor {
@@ -14,11 +14,21 @@ interface Anchor {
   name: string         // UserSession.displayName or device name
   destination: string  // AnchorDestination (Window/Kitchen/Meeting Room)
   battery: number      // UIDevice.current.batteryLevel * 100
-  status: "connected" | "disconnected"
+  status: "idle" | "active"
   connectedNavigators: number // Count of connected navigators
-  measuredDistance?: number   // From DistanceErrorTracker
-  groundTruthDistance?: number // From DistanceErrorTracker
-  distanceError?: number      // Calculated error
+  navigatorDistances?: Array<{  // Distances to each navigator
+    id: string
+    name: string
+    distance?: number
+  }>
+  anchorConnection?: {    // Connection to another anchor
+    connectedTo: string   // Other anchor's destination name
+    connectedToId: string // Other anchor's user ID
+    measuredDistance?: number
+    expectedDistance?: number
+    distanceError?: number
+    percentError?: number
+  }
 }
 
 interface Navigator {
@@ -342,7 +352,19 @@ export default function GuardianConsole() {
                         <span className="text-sm">{anchor.battery !== undefined ? `${anchor.battery}%` : "--"}</span>
                       </div>
                     </TableCell>
-                    <TableCell>{getDistanceErrorBadge(anchor.distanceError)}</TableCell>
+                    <TableCell>
+                      {anchor.anchorConnection?.percentError ? (
+                        <Badge 
+                          variant={Math.abs(anchor.anchorConnection.percentError) < 5 ? "default" : 
+                                  Math.abs(anchor.anchorConnection.percentError) < 10 ? "secondary" : "destructive"}
+                          className="text-xs"
+                        >
+                          {anchor.anchorConnection.percentError.toFixed(1)}%
+                        </Badge>
+                      ) : (
+                        <span className="text-muted-foreground">--</span>
+                      )}
+                    </TableCell>
                     <TableCell>{getStatusBadge(anchor.status)}</TableCell>
                   </TableRow>
                   ))
@@ -486,23 +508,66 @@ export default function GuardianConsole() {
                 </div>
               </div>
 
-              <div className="space-y-3">
-                <h4 className="font-medium">Distance Measurements</h4>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Measured Distance</span>
-                    <span className="font-mono">{selectedAnchor.measuredDistance?.toFixed(2) || "--"} m</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Ground Truth</span>
-                    <span className="font-mono">{selectedAnchor.groundTruthDistance?.toFixed(2) || "--"} m</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Distance Error</span>
-                    {getDistanceErrorBadge(selectedAnchor.distanceError)}
+              {/* Anchor-to-Anchor Connection */}
+              {selectedAnchor.anchorConnection && (
+                <div className="space-y-3 p-4 bg-muted/50 rounded-lg">
+                  <h4 className="font-medium flex items-center gap-2">
+                    <Activity className="h-4 w-4" />
+                    Anchor-to-Anchor Connection
+                  </h4>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Connected To</span>
+                      <Badge variant="outline">{selectedAnchor.anchorConnection.connectedTo}</Badge>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Measured Distance</span>
+                      <span className="font-mono">
+                        {selectedAnchor.anchorConnection.measuredDistance?.toFixed(2) || "--"} m
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Expected Distance</span>
+                      <span className="font-mono">
+                        {selectedAnchor.anchorConnection.expectedDistance?.toFixed(2) || "--"} m
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Distance Error</span>
+                      <span className={`font-mono ${
+                        selectedAnchor.anchorConnection.percentError && 
+                        Math.abs(selectedAnchor.anchorConnection.percentError) < 5 
+                          ? "text-green-500" 
+                          : Math.abs(selectedAnchor.anchorConnection.percentError || 0) < 10
+                          ? "text-orange-500"
+                          : "text-red-500"
+                      }`}>
+                        {selectedAnchor.anchorConnection.distanceError?.toFixed(2) || "--"} m
+                        {selectedAnchor.anchorConnection.percentError && (
+                          <span className="text-xs">
+                            {" ("}{selectedAnchor.anchorConnection.percentError.toFixed(1)}%)
+                          </span>
+                        )}
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
+
+              {/* Navigator Distances */}
+              {selectedAnchor.navigatorDistances && selectedAnchor.navigatorDistances.length > 0 && (
+                <div className="space-y-3">
+                  <h4 className="font-medium">Navigator Distances</h4>
+                  <div className="space-y-2 text-sm">
+                    {selectedAnchor.navigatorDistances.map((nav) => (
+                      <div key={nav.id} className="flex justify-between">
+                        <span className="text-muted-foreground">{nav.name}</span>
+                        <span className="font-mono">{nav.distance?.toFixed(2) || "--"} m</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <div className="space-y-3">
                 <h4 className="font-medium">Device Information</h4>
