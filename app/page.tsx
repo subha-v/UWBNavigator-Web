@@ -49,7 +49,7 @@ interface SmartContract {
 }
 
 // API configuration
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://192.168.1.100:8080'
+// Multiple device IPs are now hardcoded in the fetchData function
 
 // Mock contracts data (keeping as is)
 const mockContracts: SmartContract[] = [
@@ -99,8 +99,8 @@ function getBatteryIcon(level?: number) {
   return <Battery className="w-4 h-4 text-red-500 fill-red-500" />
 }
 
-function getDistanceErrorBadge(error?: number) {
-  if (error === undefined) return <Badge variant="outline">--</Badge>
+function getDistanceErrorBadge(error?: number | null) {
+  if (error === undefined || error === null) return <Badge variant="outline">--</Badge>
   const absError = Math.abs(error)
   if (absError < 0.5)
     return <Badge className="bg-green-100 text-green-800">{error.toFixed(2)}m</Badge>
@@ -177,34 +177,50 @@ export default function GuardianConsole() {
   const [contractStatusFilter, setContractStatusFilter] = useState("all")
   const [selectedContract, setSelectedContract] = useState<SmartContract | null>(null)
 
-  // Fetch data from iOS app
+  // Fetch data from multiple iOS devices
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        // Fetch anchors data
-        const anchorsRes = await fetch(`${API_URL}/api/anchors`)
-        if (anchorsRes.ok) {
-          const anchorsData = await anchorsRes.json()
-          setAnchors(anchorsData)
-          setConnectionStatus("connected")
-        }
+      // Define multiple device IPs
+      const deviceIPs = [
+        'http://10.1.10.110:8080',  // subhavee1@gmail.com's device
+        'http://10.1.10.163:8080'   // adpatil989@gmail.com's device
+      ]
+      
+      const allAnchors: Anchor[] = []
+      const allNavigators: Navigator[] = []
+      let anyConnected = false
+      
+      // Fetch from all devices in parallel
+      await Promise.all(deviceIPs.map(async (apiUrl) => {
+        try {
+          // Fetch anchors data
+          const anchorsRes = await fetch(`${apiUrl}/api/anchors`).catch(() => null)
+          if (anchorsRes && anchorsRes.ok) {
+            const anchorsData = await anchorsRes.json()
+            if (Array.isArray(anchorsData)) {
+              allAnchors.push(...anchorsData)
+              anyConnected = true
+            }
+          }
 
-        // Fetch navigators data
-        const navigatorsRes = await fetch(`${API_URL}/api/navigators`)
-        if (navigatorsRes.ok) {
-          const navigatorsData = await navigatorsRes.json()
-          setNavigators(navigatorsData)
+          // Fetch navigators data
+          const navigatorsRes = await fetch(`${apiUrl}/api/navigators`).catch(() => null)
+          if (navigatorsRes && navigatorsRes.ok) {
+            const navigatorsData = await navigatorsRes.json()
+            if (Array.isArray(navigatorsData)) {
+              allNavigators.push(...navigatorsData)
+            }
+          }
+        } catch (error) {
+          console.error(`Failed to fetch from ${apiUrl}:`, error)
         }
-
-        setLastUpdated(new Date())
-      } catch (error) {
-        console.error('Failed to fetch data:', error)
-        setConnectionStatus("error")
-        
-        // Clear data when can't connect - don't show mock data
-        setAnchors([])
-        setNavigators([])
-      }
+      }))
+      
+      // Update state with combined data
+      setAnchors(allAnchors)
+      setNavigators(allNavigators)
+      setConnectionStatus(anyConnected ? "connected" : "disconnected")
+      setLastUpdated(new Date())
     }
 
     // Initial fetch
