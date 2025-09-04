@@ -1,6 +1,6 @@
 # UWB Navigator Web Dashboard
 
-Real-time web dashboard for monitoring and visualizing Ultra-Wideband (UWB) tracking data from iOS devices.
+Real-time web dashboard for monitoring and visualizing Ultra-Wideband (UWB) tracking data from iOS devices with automatic Bonjour/mDNS device discovery.
 
 ## Overview
 
@@ -13,8 +13,10 @@ This web application provides a real-time dashboard interface for the UWB Naviga
 
 ## Features
 
-- **Real-time Data Updates**: Polls iOS device API every second
-- **Multi-device Tracking**: Monitor multiple anchors and navigators simultaneously
+- **Automatic Device Discovery**: iOS devices automatically discovered via FastAPI/Bonjour - no manual IP configuration
+- **Real-time Data Updates**: Polls aggregated data from FastAPI server every second
+- **Role-based Display**: Automatically separates anchors and navigators in appropriate columns
+- **Multi-device Tracking**: Monitor unlimited anchors and navigators simultaneously
 - **Distance Visualization**: Display precise UWB distance measurements
 - **Battery Monitoring**: Track device battery levels
 - **Connection Status**: Visual indicators for device states
@@ -33,14 +35,16 @@ This web application provides a real-time dashboard interface for the UWB Naviga
 ## Prerequisites
 
 - Node.js 18+ and npm/yarn
-- iOS device running UWB Navigator app
-- Same network connectivity between web dashboard and iOS device
+- Python 3.8+ (for FastAPI server)
+- iOS device(s) running UWB Navigator app
+- Same WiFi network for all devices and computer
+- FastAPI server running with Bonjour discovery
 
 ## Installation
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/UWBNavigator-Web.git
+git clone https://github.com/subha-v/UWBNavigator-Web.git
 cd UWBNavigator-Web/uwb-navigator-web
 ```
 
@@ -49,35 +53,47 @@ cd UWBNavigator-Web/uwb-navigator-web
 npm install
 ```
 
-3. Configure iOS device connection:
+3. Configure environment:
 ```bash
-# Create .env.local file
-cp .env.example .env.local
-
-# Edit .env.local and set your iOS device IP
-NEXT_PUBLIC_API_URL=http://YOUR_IPHONE_IP:8080
+cp .env.local.example .env.local
+# Default configuration points to http://localhost:8000 (FastAPI server)
 ```
 
-4. Start the development server:
+4. Start the FastAPI server (in UWBNavigator directory):
+```bash
+cd path/to/UWBNavigator
+./start_server.sh
+```
+
+5. Start the development server:
 ```bash
 npm run dev
 ```
 
-5. Open http://localhost:3000 in your browser
+6. Open http://localhost:3002 in your browser
 
 ## Configuration
 
-### Finding Your iPhone's IP Address
+### Automatic Device Discovery (NEW!)
 
-1. On iPhone: Settings → Wi-Fi → (i) icon next to connected network
-2. Look for "IP Address" under IPV4 ADDRESS section
-3. Use this IP in your `.env.local` file
+Devices are now automatically discovered via Bonjour/mDNS - no manual IP configuration needed!
 
 ### Environment Variables
 
 ```env
-# iOS Device API Configuration
-NEXT_PUBLIC_API_URL=http://10.1.10.110:8080
+# FastAPI Server URL (default works for local development)
+NEXT_PUBLIC_FASTAPI_URL=http://localhost:8000
+
+# Optional: WebSocket URL for real-time updates
+NEXT_PUBLIC_WS_URL=ws://localhost:8000/ws
+```
+
+### Manual Device Registration (Fallback)
+
+If Bonjour discovery isn't working, you can manually register devices:
+
+```bash
+curl -X POST "http://localhost:8000/api/register?ip=[DEVICE_IP]&port=8080"
 ```
 
 ## Usage
