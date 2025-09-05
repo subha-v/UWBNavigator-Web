@@ -98,6 +98,12 @@ const mockContracts: SmartContract[] = [
 function getStatusBadge(status: string) {
   if (status === "connected" || status === "active")
     return <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">{status}</Badge>
+  if (status === "error")
+    return <Badge className="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">Unreachable</Badge>
+  if (status === "offline")
+    return <Badge className="bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">Offline</Badge>
+  if (status === "stale")
+    return <Badge className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">Stale</Badge>
   return <Badge className="bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200">{status}</Badge>
 }
 
