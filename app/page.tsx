@@ -21,14 +21,15 @@ interface Anchor {
     name: string
     distance?: number
   }>
-  anchorConnection?: {    // Connection to another anchor
+  anchorConnections?: Array<{    // Connections to ALL other anchors
     connectedTo: string   // Other anchor's destination name
     connectedToId: string // Other anchor's user ID
+    peerId?: string       // Peer ID
     measuredDistance?: number
     expectedDistance?: number
     distanceError?: number
     percentError?: number
-  }
+  }>
 }
 
 interface Navigator {
@@ -60,6 +61,38 @@ interface SmartContract {
 
 // API configuration - uses FastAPI server with Bonjour discovery
 // No need for hardcoded IPs - devices are automatically discovered
+
+// Ground truth distances between anchor destinations (in meters)
+const GROUND_TRUTH_DISTANCES: {[key: string]: number} = {
+  // A-B, A-C, A-D distances
+  "A-B": 5.0,
+  "B-A": 5.0,
+  "A-C": 7.07,  // sqrt(5^2 + 5^2)
+  "C-A": 7.07,
+  "A-D": 5.0,
+  "D-A": 5.0,
+  
+  // B-C, B-D distances
+  "B-C": 5.0,
+  "C-B": 5.0,
+  "B-D": 7.07,  // sqrt(5^2 + 5^2)
+  "D-B": 7.07,
+  
+  // C-D distance
+  "C-D": 5.0,
+  "D-C": 5.0,
+}
+
+// Helper function to calculate error on webapp side
+function calculateError(measured: number, from: string, to: string): {error: number, percentError: number} | null {
+  const key = `${from}-${to}`
+  const expected = GROUND_TRUTH_DISTANCES[key]
+  if (!expected) return null
+  
+  const error = measured - expected
+  const percentError = (error / expected) * 100
+  return { error, percentError }
+}
 
 // Mock contracts data (keeping as is)
 const mockContracts: SmartContract[] = [
@@ -359,14 +392,27 @@ export default function GuardianConsole() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      {anchor.anchorConnection?.percentError ? (
-                        <Badge 
-                          variant={Math.abs(anchor.anchorConnection.percentError) < 5 ? "default" : 
-                                  Math.abs(anchor.anchorConnection.percentError) < 10 ? "secondary" : "destructive"}
-                          className="text-xs"
-                        >
-                          {anchor.anchorConnection.percentError.toFixed(1)}%
-                        </Badge>
+                      {anchor.anchorConnections && anchor.anchorConnections.length > 0 ? (
+                        (() => {
+                          // Calculate average error across all connections
+                          const errors = anchor.anchorConnections
+                            .map(conn => conn.percentError)
+                            .filter(err => err !== undefined) as number[]
+                          
+                          if (errors.length === 0) return <span className="text-muted-foreground">--</span>
+                          
+                          const avgError = errors.reduce((sum, err) => sum + Math.abs(err), 0) / errors.length
+                          
+                          return (
+                            <Badge 
+                              variant={avgError < 5 ? "default" : 
+                                      avgError < 10 ? "secondary" : "destructive"}
+                              className="text-xs"
+                            >
+                              {avgError.toFixed(1)}% ({errors.length})
+                            </Badge>
+                          )
+                        })()
                       ) : (
                         <span className="text-muted-foreground">--</span>
                       )}
@@ -514,49 +560,64 @@ export default function GuardianConsole() {
                 </div>
               </div>
 
-              {/* Anchor-to-Anchor Connection */}
-              {selectedAnchor.anchorConnection && (
+              {/* Anchor-to-Anchor Connections */}
+              {selectedAnchor.anchorConnections && selectedAnchor.anchorConnections.length > 0 && (
                 <div className="space-y-3 p-4 bg-muted/50 rounded-lg">
                   <h4 className="font-medium flex items-center gap-2">
                     <Activity className="h-4 w-4" />
-                    Anchor-to-Anchor Connection
+                    Anchor-to-Anchor Connections ({selectedAnchor.anchorConnections.length})
                   </h4>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Connected To</span>
-                      <Badge variant="outline">{selectedAnchor.anchorConnection.connectedTo}</Badge>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Measured Distance</span>
-                      <span className="font-mono">
-                        {selectedAnchor.anchorConnection.measuredDistance?.toFixed(2) || "--"} m
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Expected Distance</span>
-                      <span className="font-mono">
-                        {selectedAnchor.anchorConnection.expectedDistance?.toFixed(2) || "--"} m
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Distance Error</span>
-                      <span className={`font-mono ${
-                        selectedAnchor.anchorConnection.percentError && 
-                        Math.abs(selectedAnchor.anchorConnection.percentError) < 5 
-                          ? "text-green-500" 
-                          : Math.abs(selectedAnchor.anchorConnection.percentError || 0) < 10
-                          ? "text-orange-500"
-                          : "text-red-500"
-                      }`}>
-                        {selectedAnchor.anchorConnection.distanceError?.toFixed(2) || "--"} m
-                        {selectedAnchor.anchorConnection.percentError && (
-                          <span className="text-xs">
-                            {" ("}{selectedAnchor.anchorConnection.percentError.toFixed(1)}%)
+                  {selectedAnchor.anchorConnections.map((conn, idx) => {
+                    // Calculate error on webapp side if not provided
+                    let percentError = conn.percentError
+                    let distanceError = conn.distanceError
+                    
+                    if (percentError === undefined && conn.measuredDistance !== undefined && selectedAnchor.destination && conn.connectedTo) {
+                      const calcResult = calculateError(conn.measuredDistance, selectedAnchor.destination, conn.connectedTo)
+                      if (calcResult) {
+                        percentError = calcResult.percentError
+                        distanceError = calcResult.error
+                      }
+                    }
+                    
+                    return (
+                      <div key={idx} className="space-y-2 text-sm border-t pt-3 first:border-t-0 first:pt-0">
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Connected To</span>
+                          <Badge variant="outline">{conn.connectedTo}</Badge>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Measured Distance</span>
+                          <span className="font-mono">
+                            {conn.measuredDistance?.toFixed(2) || "--"} m
                           </span>
-                        )}
-                      </span>
-                    </div>
-                  </div>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Expected Distance</span>
+                          <span className="font-mono">
+                            {conn.expectedDistance?.toFixed(2) || GROUND_TRUTH_DISTANCES[`${selectedAnchor.destination}-${conn.connectedTo}`]?.toFixed(2) || "--"} m
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Distance Error</span>
+                          <span className={`font-mono ${
+                            percentError !== undefined && Math.abs(percentError) < 5 
+                              ? "text-green-500" 
+                              : percentError !== undefined && Math.abs(percentError) < 10
+                              ? "text-orange-500"
+                              : "text-red-500"
+                          }`}>
+                            {distanceError?.toFixed(2) || "--"} m
+                            {percentError !== undefined && (
+                              <span className="text-xs">
+                                {" ("}{percentError.toFixed(1)}%)
+                              </span>
+                            )}
+                          </span>
+                        </div>
+                      </div>
+                    )
+                  })}
                 </div>
               )}
 
