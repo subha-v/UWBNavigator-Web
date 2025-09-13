@@ -134,14 +134,14 @@ const mockContracts: SmartContract[] = [
 
 function getStatusBadge(status: string) {
   if (status === "connected" || status === "active")
-    return <Badge className="bg-green-900 text-green-200 border-green-700">{status}</Badge>
+    return <Badge className="bg-green-100 text-green-800 border-green-200 px-3 py-1 text-sm font-medium">{status}</Badge>
   if (status === "error")
-    return <Badge className="bg-red-900 text-red-200 border-red-700">Unreachable</Badge>
+    return <Badge className="bg-red-100 text-red-800 border-red-200 px-3 py-1 text-sm font-medium">Unreachable</Badge>
   if (status === "offline")
-    return <Badge className="bg-orange-900 text-orange-200 border-orange-700">Offline</Badge>
+    return <Badge className="bg-orange-100 text-orange-800 border-orange-200 px-3 py-1 text-sm font-medium">Offline</Badge>
   if (status === "stale")
-    return <Badge className="bg-yellow-900 text-yellow-200 border-yellow-700">Stale</Badge>
-  return <Badge className="bg-gray-700 text-gray-200 border-gray-600">{status}</Badge>
+    return <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200 px-3 py-1 text-sm font-medium">Stale</Badge>
+  return <Badge className="bg-gray-100 text-gray-800 border-gray-200 px-3 py-1 text-sm font-medium">{status}</Badge>
 }
 
 function getBatteryIcon(level?: number) {
@@ -167,7 +167,7 @@ function getBatteryIcon(level?: number) {
   
   return (
     <div className="flex items-center space-x-1">
-      <div className="w-6 h-3 border border-gray-300 rounded-sm relative bg-gray-800">
+      <div className="w-6 h-3 border border-gray-400 rounded-sm relative bg-white">
         <div 
           className={`h-full ${color} rounded-sm transition-all duration-300`}
           style={{ width: `${fillWidth}%` }}
@@ -179,7 +179,7 @@ function getBatteryIcon(level?: number) {
 }
 
 function getDistanceErrorBadge(error?: number | null) {
-  if (error === undefined || error === null) return <Badge variant="outline" className="bg-gray-700 border-gray-600 text-gray-200">--</Badge>
+  if (error === undefined || error === null) return <Badge variant="outline" className="bg-gray-100 border-gray-300 text-gray-800">--</Badge>
   const absError = Math.abs(error)
   if (absError < 0.5)
     return <Badge className="bg-green-100 text-green-800">{error.toFixed(2)}m</Badge>
@@ -192,50 +192,50 @@ function getContractStatusBadge(status: string) {
   switch (status) {
     case "Pending":
       return (
-        <Badge className="bg-blue-900 text-blue-200 border-blue-700">
+        <Badge className="bg-blue-100 text-blue-800 border-blue-200">
           <Loader className="w-3 h-3 mr-1" />
           Pending
         </Badge>
       )
     case "Executing":
       return (
-        <Badge className="bg-amber-900 text-amber-200 border-amber-700">
+        <Badge className="bg-amber-100 text-amber-800 border-amber-200">
           <Clock className="w-3 h-3 mr-1" />
           Executing
         </Badge>
       )
     case "Settled":
       return (
-        <Badge className="bg-green-900 text-green-200 border-green-700">
+        <Badge className="bg-green-100 text-green-800 border-green-200">
           <CheckCircle className="w-3 h-3 mr-1" />
           Settled
         </Badge>
       )
     case "Failed":
       return (
-        <Badge className="bg-red-900 text-red-200 border-red-700">
+        <Badge className="bg-red-100 text-red-800 border-red-200">
           <XCircle className="w-3 h-3 mr-1" />
           Failed
         </Badge>
       )
     default:
-      return <Badge variant="outline" className="bg-gray-700 border-gray-600 text-gray-200" className="bg-gray-700 border-gray-600 text-gray-200">{status}</Badge>
+      return <Badge variant="outline" className="bg-gray-100 border-gray-300 text-gray-800">{status}</Badge>
   }
 }
 
 function getQuorumBadge(quorum: string) {
   if (quorum === "Pass")
-    return <Badge className="bg-green-900 text-green-200 border-green-700">Pass</Badge>
-  return <Badge className="bg-red-900 text-red-200 border-red-700">Fail</Badge>
+    return <Badge className="bg-green-100 text-green-800 border-green-200">Pass</Badge>
+  return <Badge className="bg-red-100 text-red-800 border-red-200">Fail</Badge>
 }
 
 function getQoDBadge(qod: number | null | undefined) {
-  if (qod === null || qod === undefined) return <Badge variant="outline" className="bg-gray-700 border-gray-600 text-gray-200" className="bg-gray-700 border-gray-600 text-gray-200">N/A</Badge>
+  if (qod === null || qod === undefined) return <Badge variant="outline" className="bg-gray-100 border-gray-300 text-gray-800 px-3 py-1 text-sm font-medium">N/A</Badge>
   if (qod >= 80)
-    return <Badge className="bg-green-900 text-green-200 border-green-700">{qod}%</Badge>
+    return <Badge className="bg-green-100 text-green-800 border-green-200 px-3 py-1 text-sm font-medium">{qod}%</Badge>
   if (qod >= 50)
-    return <Badge className="bg-amber-900 text-amber-200 border-amber-700">{qod}%</Badge>
-  return <Badge className="bg-red-900 text-red-200 border-red-700">{qod}%</Badge>
+    return <Badge className="bg-amber-100 text-amber-800 border-amber-200 px-3 py-1 text-sm font-medium">{qod}%</Badge>
+  return <Badge className="bg-red-100 text-red-800 border-red-200 px-3 py-1 text-sm font-medium">{qod}%</Badge>
 }
 
 function formatTimeAgo(date: Date) {
@@ -344,14 +344,14 @@ export default function GuardianConsole() {
   })
 
   return (
-    <div className="min-h-screen bg-gray-900">
-      <header className="border-b border-gray-700 bg-gray-900/95 backdrop-blur supports-[backdrop-filter]:bg-gray-900/60">
+    <div className="min-h-screen bg-gray-50">
+      <header className="border-b border-gray-200 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
         <div className="flex h-20 items-center justify-center px-4 relative">
-          <h1 className="text-2xl font-bold text-center text-white">AI GUARDIAN</h1>
+          <h1 className="text-2xl font-bold text-center text-gray-900">AI GUARDIAN</h1>
           
           <div className="absolute right-4">
             <Select defaultValue="production">
-              <SelectTrigger className="w-32 bg-gray-800 border-gray-600 text-white">
+              <SelectTrigger className="w-32 bg-white border-gray-300 text-gray-900">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -362,7 +362,7 @@ export default function GuardianConsole() {
             </Select>
           </div>
 
-          <div className="absolute left-4 flex items-center space-x-2 text-sm text-gray-400">
+          <div className="absolute left-4 flex items-center space-x-2 text-sm text-gray-600">
             <div className="flex items-center space-x-1">
               {connectionStatus === "connected" ? (
                 <>
@@ -385,22 +385,22 @@ export default function GuardianConsole() {
       {/* Three Column Layout */}
       <div className="flex h-[calc(100vh-5rem)] gap-4 p-6">
         {/* Left Panel - Anchors (30%) */}
-        <div className="w-[30%] border-r border-gray-700">
-          <div className="border-b border-gray-700 p-4">
+        <div className="w-[30%] border-r border-gray-200">
+          <div className="border-b border-gray-200 p-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-white">Anchors</h2>
+              <h2 className="text-lg font-semibold text-gray-900">Anchors</h2>
               <Input
                 placeholder="Search anchors..."
                 value={anchorSearch}
                 onChange={(e) => setAnchorSearch(e.target.value)}
-                className="w-40 bg-gray-800 border-gray-600 text-white placeholder-gray-400"
+                className="w-40 bg-white border-gray-300 text-gray-900 placeholder-gray-500"
               />
             </div>
           </div>
 
           <div className="p-4 overflow-y-auto">
             {filteredAnchors.length === 0 ? (
-              <div className="text-center text-gray-400 py-8">
+              <div className="text-center text-gray-500 py-8">
                 {connectionStatus === "connected" ? "No anchors connected" : "Waiting for iOS app connection..."}
               </div>
             ) : (
@@ -410,19 +410,19 @@ export default function GuardianConsole() {
                   return (
                     <Card
                       key={anchor.id}
-                      className="cursor-pointer transition-all hover:shadow-md border-l-4 border-l-blue-500 min-h-[100px] flex flex-col justify-between bg-gray-800 border-gray-700 text-white hover:bg-gray-750"
+                      className="cursor-pointer transition-all hover:shadow-md border-l-4 border-l-blue-500 min-h-[80px] flex flex-col justify-between bg-white border-gray-200 text-gray-900 hover:bg-gray-50"
                     >
                       {/* Collapsed View */}
                       <div 
-                        className="p-3"
+                        className="p-4"
                         onClick={() => setExpandedAnchor(isExpanded ? null : anchor.id)}
                       >
-                        <div className="space-y-2">
+                        <div className="space-y-3">
                           {/* Main row with Agent ID */}
                           <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-2">
-                              <span className="text-xs text-gray-400 font-medium">ID:</span>
-                              <span className="font-mono text-white text-base font-medium truncate">
+                              <span className="text-sm text-gray-500 font-medium">ID:</span>
+                              <span className="font-mono text-gray-900 text-lg font-semibold truncate">
                                 {anchor.name || "Unknown"}
                               </span>
                             </div>
@@ -432,10 +432,10 @@ export default function GuardianConsole() {
                           {/* QoD row */}
                           <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-2">
-                              <span className="text-xs text-gray-400 font-medium">QoD:</span>
+                              <span className="text-sm text-gray-500 font-medium">QoD:</span>
                               {getQoDBadge(anchor.qod)}
                             </div>
-                            <span className="text-xs text-gray-400">
+                            <span className="text-sm text-gray-500">
                               {isExpanded ? "Click to collapse" : "Click to expand"}
                             </span>
                           </div>
@@ -444,16 +444,16 @@ export default function GuardianConsole() {
 
                       {/* Expanded View */}
                       {isExpanded && (
-                        <div className="px-3 pb-3 pt-3 space-y-3 border-t border-gray-600">
+                        <div className="px-3 pb-3 pt-3 space-y-3 border-t border-gray-200">
                           <div className="flex items-center justify-between">
-                            <span className="text-sm text-gray-400">Location</span>
-                            <Badge variant="outline" className="bg-gray-700 border-gray-600 text-gray-200 text-xs px-3 py-1">
+                            <span className="text-sm text-gray-500">Location</span>
+                            <Badge variant="outline" className="bg-gray-700 border-gray-200 text-gray-200 text-xs px-3 py-1">
                               {anchor.destination || "N/A"}
                             </Badge>
                           </div>
                           
                           <div className="flex items-center justify-between">
-                            <span className="text-sm text-gray-400">Battery</span>
+                            <span className="text-sm text-gray-500">Battery</span>
                             <div className="flex items-center space-x-1">
                               {getBatteryIcon(anchor.battery)}
                               <span className="text-sm">
@@ -463,14 +463,14 @@ export default function GuardianConsole() {
                           </div>
                           
                           <div className="flex items-center justify-between">
-                            <span className="text-sm text-gray-400">Error</span>
+                            <span className="text-sm text-gray-500">Error</span>
                             {anchor.anchorConnections && anchor.anchorConnections.length > 0 ? (
                               (() => {
                                 const errors = anchor.anchorConnections
                                   .map(conn => conn.percentError)
                                   .filter(err => err !== undefined) as number[]
                                 
-                                if (errors.length === 0) return <span className="text-gray-400 text-sm">--</span>
+                                if (errors.length === 0) return <span className="text-gray-500 text-sm">--</span>
                                 
                                 const avgError = errors.reduce((sum, err) => sum + Math.abs(err), 0) / errors.length
                                 
@@ -485,27 +485,27 @@ export default function GuardianConsole() {
                                 )
                               })()
                             ) : (
-                              <span className="text-gray-400 text-sm">--</span>
+                              <span className="text-gray-500 text-sm">--</span>
                             )}
                           </div>
 
                           <div className="flex items-center justify-between">
-                            <span className="text-sm text-gray-400">Connected Anchors</span>
-                            <Badge variant="secondary" className="bg-gray-700 text-gray-200 border-gray-600 text-xs px-3 py-1">
+                            <span className="text-sm text-gray-500">Connected Anchors</span>
+                            <Badge variant="secondary" className="bg-gray-100 text-gray-700 border-gray-200 text-xs px-3 py-1">
                               {anchor.anchorConnections ? anchor.anchorConnections.length : 0}
                             </Badge>
                           </div>
 
                           <div className="flex items-center justify-between">
-                            <span className="text-sm text-gray-400">Connected Navigators</span>
-                            <Badge variant="secondary" className="bg-gray-700 text-gray-200 border-gray-600 text-xs px-3 py-1">
+                            <span className="text-sm text-gray-500">Connected Navigators</span>
+                            <Badge variant="secondary" className="bg-gray-100 text-gray-700 border-gray-200 text-xs px-3 py-1">
                               {anchor.connectedNavigators || 0}
                             </Badge>
                           </div>
 
-                          <div className="pt-2 border-t border-gray-600">
+                          <div className="pt-2 border-t border-gray-200">
                             <button 
-                              className="text-xs text-blue-400 hover:text-blue-300"
+                              className="text-xs text-blue-600 hover:text-blue-500"
                               onClick={(e) => {
                                 e.stopPropagation()
                                 setSelectedAnchor(anchor)
@@ -525,22 +525,22 @@ export default function GuardianConsole() {
         </div>
 
         {/* Middle Panel - Navigators (30%) */}
-        <div className="w-[30%] border-r border-gray-700">
-          <div className="border-b border-gray-700 p-4">
+        <div className="w-[30%] border-r border-gray-200">
+          <div className="border-b border-gray-200 p-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-white">Navigators</h2>
+              <h2 className="text-lg font-semibold text-gray-900">Navigators</h2>
               <Input
                 placeholder="Search navigators..."
                 value={navigatorSearch}
                 onChange={(e) => setNavigatorSearch(e.target.value)}
-                className="w-40 bg-gray-800 border-gray-600 text-white placeholder-gray-400"
+                className="w-40 bg-white border-gray-300 text-gray-900 placeholder-gray-500"
               />
             </div>
           </div>
 
           <div className="p-4 overflow-y-auto">
             {filteredNavigators.length === 0 ? (
-              <div className="text-center text-gray-400 py-8">
+              <div className="text-center text-gray-500 py-8">
                 {connectionStatus === "connected" ? "No navigators connected" : "Waiting for iOS app connection..."}
               </div>
             ) : (
@@ -550,19 +550,19 @@ export default function GuardianConsole() {
                   return (
                     <Card
                       key={navigator.id}
-                      className="cursor-pointer transition-all hover:shadow-md border-l-4 border-l-green-500 min-h-[100px] flex flex-col justify-between bg-gray-800 border-gray-700 text-white hover:bg-gray-750"
+                      className="cursor-pointer transition-all hover:shadow-md border-l-4 border-l-green-500 min-h-[80px] flex flex-col justify-between bg-white border-gray-200 text-gray-900 hover:bg-gray-50"
                     >
                       {/* Collapsed View */}
                       <div 
-                        className="p-3"
+                        className="p-4"
                         onClick={() => setExpandedNavigator(isExpanded ? null : navigator.id)}
                       >
-                        <div className="space-y-2">
+                        <div className="space-y-3">
                           {/* Main row with Agent ID */}
                           <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-2">
-                              <span className="text-xs text-gray-400 font-medium">ID:</span>
-                              <span className="font-mono text-white text-base font-medium truncate">
+                              <span className="text-sm text-gray-500 font-medium">ID:</span>
+                              <span className="font-mono text-gray-900 text-lg font-semibold truncate">
                                 {navigator.name || "Unknown"}
                               </span>
                             </div>
@@ -572,10 +572,10 @@ export default function GuardianConsole() {
                           {/* QoD row */}
                           <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-2">
-                              <span className="text-xs text-gray-400 font-medium">QoD:</span>
+                              <span className="text-sm text-gray-500 font-medium">QoD:</span>
                               {getQoDBadge(navigator.qod)}
                             </div>
-                            <span className="text-xs text-gray-400">
+                            <span className="text-sm text-gray-500">
                               {isExpanded ? "Click to collapse" : "Click to expand"}
                             </span>
                           </div>
@@ -584,16 +584,16 @@ export default function GuardianConsole() {
 
                       {/* Expanded View */}
                       {isExpanded && (
-                        <div className="px-3 pb-3 pt-3 space-y-3 border-t border-gray-600">
+                        <div className="px-3 pb-3 pt-3 space-y-3 border-t border-gray-200">
                           <div className="flex items-center justify-between">
-                            <span className="text-sm text-gray-400">Target Anchor</span>
-                            <Badge variant="outline" className="bg-gray-700 border-gray-600 text-gray-200 text-xs px-3 py-1">
+                            <span className="text-sm text-gray-500">Target Anchor</span>
+                            <Badge variant="outline" className="bg-gray-700 border-gray-200 text-gray-200 text-xs px-3 py-1">
                               {navigator.targetAnchor || "None"}
                             </Badge>
                           </div>
                           
                           <div className="flex items-center justify-between">
-                            <span className="text-sm text-gray-400">Battery</span>
+                            <span className="text-sm text-gray-500">Battery</span>
                             <div className="flex items-center space-x-1">
                               {getBatteryIcon(navigator.battery)}
                               <span className="text-sm">
@@ -603,26 +603,26 @@ export default function GuardianConsole() {
                           </div>
                           
                           <div className="flex items-center justify-between">
-                            <span className="text-sm text-gray-400">Connected Anchors</span>
-                            <Badge variant="secondary" className="bg-gray-700 text-gray-200 border-gray-600 text-xs px-3 py-1">
+                            <span className="text-sm text-gray-500">Connected Anchors</span>
+                            <Badge variant="secondary" className="bg-gray-100 text-gray-700 border-gray-200 text-xs px-3 py-1">
                               {navigator.connectedAnchors || 0}
                             </Badge>
                           </div>
 
                           {Object.keys(navigator.distances).length > 0 && (
-                            <div className="pt-2 border-t border-gray-600">
-                              <span className="text-xs text-gray-400 mb-2 block">Distances</span>
+                            <div className="pt-2 border-t border-gray-200">
+                              <span className="text-xs text-gray-500 mb-2 block">Distances</span>
                               <div className="space-y-1">
                                 {Object.entries(navigator.distances).slice(0, 3).map(([anchorId, distance]) => (
                                   <div key={anchorId} className="flex items-center justify-between text-xs">
-                                    <span className="font-mono text-white truncate">{anchorId}</span>
-                                    <Badge variant="outline" className="bg-gray-700 border-gray-600 text-gray-200" className="text-xs">
+                                    <span className="font-mono text-gray-900 truncate">{anchorId}</span>
+                                    <Badge variant="outline" className="bg-gray-700 border-gray-200 text-gray-200" className="text-xs">
                                       {distance.toFixed(2)}m
                                     </Badge>
                                   </div>
                                 ))}
                                 {Object.keys(navigator.distances).length > 3 && (
-                                  <div className="text-xs text-gray-400 text-center">
+                                  <div className="text-xs text-gray-500 text-center">
                                     +{Object.keys(navigator.distances).length - 3} more
                                   </div>
                                 )}
@@ -630,9 +630,9 @@ export default function GuardianConsole() {
                             </div>
                           )}
 
-                          <div className="pt-2 border-t border-gray-600">
+                          <div className="pt-2 border-t border-gray-200">
                             <button 
-                              className="text-xs text-green-400 hover:text-green-300"
+                              className="text-xs text-green-600 hover:text-green-500"
                               onClick={(e) => {
                                 e.stopPropagation()
                                 setSelectedNavigator(navigator)
@@ -653,43 +653,43 @@ export default function GuardianConsole() {
 
         {/* Right Panel - Smart Contracts (40%) */}
         <div className="w-[40%] border-r-0">
-          <div className="border-b border-gray-700 p-4">
+          <div className="border-b border-gray-200 p-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-white">Smart Contracts</h2>
+              <h2 className="text-lg font-semibold text-gray-900">Smart Contracts</h2>
               <div className="flex items-center space-x-2">
                 <Input
                   placeholder="Search contracts..."
                   value={contractSearch}
                   onChange={(e) => setContractSearch(e.target.value)}
-                  className="w-40 bg-gray-800 border-gray-600 text-white placeholder-gray-400"
+                  className="w-40 bg-white border-gray-300 text-gray-900 placeholder-gray-500"
                 />
               </div>
             </div>
           </div>
 
           <div className="p-4">
-            <Table className="bg-gray-800 border-gray-700">
-              <TableHeader className="bg-gray-700">
-                <TableRow className="border-gray-600">
-                  <TableHead className="text-gray-300">Tx ID</TableHead>
-                  <TableHead className="text-gray-300">Navigator</TableHead>
-                  <TableHead className="text-gray-300">Price</TableHead>
-                  <TableHead className="text-gray-300">Status</TableHead>
+            <Table className="bg-white border-gray-200">
+              <TableHeader className="bg-gray-100">
+                <TableRow className="border-gray-200">
+                  <TableHead className="text-gray-700">Tx ID</TableHead>
+                  <TableHead className="text-gray-700">Navigator</TableHead>
+                  <TableHead className="text-gray-700">Price</TableHead>
+                  <TableHead className="text-gray-700">Status</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredContracts.map((contract) => (
                   <TableRow
                     key={contract.txId}
-                    className="cursor-pointer border-gray-600 hover:bg-gray-750"
+                    className="cursor-pointer border-gray-200 hover:bg-gray-50"
                     onClick={() => setSelectedContract(contract)}
                   >
-                    <TableCell className="font-mono text-white text-xs text-white">{contract.txId.slice(0, 10)}...</TableCell>
-                    <TableCell className="text-xs text-white">{contract.navigatorId}</TableCell>
-                    <TableCell className="text-xs text-white">
+                    <TableCell className="font-mono text-gray-900 text-xs text-gray-900">{contract.txId.slice(0, 10)}...</TableCell>
+                    <TableCell className="text-xs text-gray-900">{contract.navigatorId}</TableCell>
+                    <TableCell className="text-xs text-gray-900">
                       {contract.price} {contract.currency}
                     </TableCell>
-                    <TableCell className="text-white">{getContractStatusBadge(contract.status)}</TableCell>
+                    <TableCell className="text-gray-900">{getContractStatusBadge(contract.status)}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -700,10 +700,10 @@ export default function GuardianConsole() {
 
       {/* Anchor Detail Sheet */}
       <Sheet open={!!selectedAnchor} onOpenChange={() => setSelectedAnchor(null)}>
-        <SheetContent className="w-[400px] sm:w-[540px] bg-gray-900 border-gray-700 text-white">
+        <SheetContent className="w-[400px] sm:w-[540px] bg-white border-gray-200 text-gray-900">
           <SheetHeader>
-            <SheetTitle className="text-white">{selectedAnchor?.name}</SheetTitle>
-            <SheetDescription className="text-gray-400">
+            <SheetTitle className="text-gray-900">{selectedAnchor?.name}</SheetTitle>
+            <SheetDescription className="text-gray-500">
               Anchor at {selectedAnchor?.destination} • ID: {selectedAnchor?.id}
             </SheetDescription>
           </SheetHeader>
@@ -712,21 +712,21 @@ export default function GuardianConsole() {
             <div className="mt-6 space-y-6">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <div className="text-sm font-medium text-white">Battery Level</div>
+                  <div className="text-sm font-medium text-gray-900">Battery Level</div>
                   <div className="flex items-center gap-2 mt-1">
                     {getBatteryIcon(selectedAnchor.battery)}
-                    <span className="text-lg font-mono text-white">{selectedAnchor.battery}%</span>
+                    <span className="text-lg font-mono text-gray-900">{selectedAnchor.battery}%</span>
                   </div>
                 </div>
                 <div>
-                  <div className="text-sm font-medium text-white">Status</div>
+                  <div className="text-sm font-medium text-gray-900">Status</div>
                   <div className="mt-1">{getStatusBadge(selectedAnchor.status)}</div>
                 </div>
               </div>
 
               {/* Anchor-to-Anchor Connections */}
               {selectedAnchor.anchorConnections && selectedAnchor.anchorConnections.length > 0 && (
-                <div className="space-y-3 p-4 bg-gray-800/50 rounded-lg">
+                <div className="space-y-3 p-4 bg-white/50 rounded-lg">
                   <h4 className="font-medium flex items-center gap-2">
                     <Activity className="h-4 w-4" />
                     Anchor-to-Anchor Connections ({selectedAnchor.anchorConnections.length})
@@ -745,26 +745,26 @@ export default function GuardianConsole() {
                     }
                     
                     return (
-                      <div key={idx} className="space-y-2 text-sm border-t border-gray-600 pt-3 first:border-t-0 first:pt-0">
+                      <div key={idx} className="space-y-2 text-sm border-t border-gray-200 pt-3 first:border-t-0 first:pt-0">
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Connected To</span>
-                          <Badge variant="outline" className="bg-gray-700 border-gray-600 text-gray-200">{conn.connectedTo}</Badge>
+                          <span className="text-gray-500">Connected To</span>
+                          <Badge variant="outline" className="bg-gray-700 border-gray-200 text-gray-200">{conn.connectedTo}</Badge>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Measured Distance</span>
-                          <span className="font-mono text-white">
+                          <span className="text-gray-500">Measured Distance</span>
+                          <span className="font-mono text-gray-900">
                             {conn.measuredDistance?.toFixed(2) || "--"} m
                           </span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Expected Distance</span>
-                          <span className="font-mono text-white">
+                          <span className="text-gray-500">Expected Distance</span>
+                          <span className="font-mono text-gray-900">
                             {conn.expectedDistance?.toFixed(2) || GROUND_TRUTH_DISTANCES[`${selectedAnchor.destination}-${conn.connectedTo}`]?.toFixed(2) || "--"} m
                           </span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Distance Error</span>
-                          <span className={`font-mono text-white ${
+                          <span className="text-gray-500">Distance Error</span>
+                          <span className={`font-mono text-gray-900 ${
                             percentError !== undefined && Math.abs(percentError) < 5 
                               ? "text-green-500" 
                               : percentError !== undefined && Math.abs(percentError) < 10
@@ -792,8 +792,8 @@ export default function GuardianConsole() {
                   <div className="space-y-2 text-sm">
                     {selectedAnchor.navigatorDistances.map((nav) => (
                       <div key={nav.id} className="flex justify-between">
-                        <span className="text-gray-400">{nav.name}</span>
-                        <span className="font-mono text-white">{nav.distance?.toFixed(2) || "--"} m</span>
+                        <span className="text-gray-500">{nav.name}</span>
+                        <span className="font-mono text-gray-900">{nav.distance?.toFixed(2) || "--"} m</span>
                       </div>
                     ))}
                   </div>
@@ -804,19 +804,19 @@ export default function GuardianConsole() {
                 <h4 className="font-medium">Device Information</h4>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Device Name</span>
+                    <span className="text-gray-500">Device Name</span>
                     <span>{selectedAnchor.name}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-400">User ID</span>
-                    <span className="font-mono text-white text-xs">{selectedAnchor.id}</span>
+                    <span className="text-gray-500">User ID</span>
+                    <span className="font-mono text-gray-900 text-xs">{selectedAnchor.id}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Location</span>
+                    <span className="text-gray-500">Location</span>
                     <span>{selectedAnchor.destination}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Connected Navigators</span>
+                    <span className="text-gray-500">Connected Navigators</span>
                     <span>{selectedAnchor.connectedNavigators}</span>
                   </div>
                 </div>
@@ -828,10 +828,10 @@ export default function GuardianConsole() {
 
       {/* Navigator Detail Sheet */}
       <Sheet open={!!selectedNavigator} onOpenChange={() => setSelectedNavigator(null)}>
-        <SheetContent className="w-[400px] sm:w-[540px] bg-gray-900 border-gray-700 text-white">
+        <SheetContent className="w-[400px] sm:w-[540px] bg-white border-gray-200 text-gray-900">
           <SheetHeader>
-            <SheetTitle className="text-white">{selectedNavigator?.name}</SheetTitle>
-            <SheetDescription className="text-gray-400">
+            <SheetTitle className="text-gray-900">{selectedNavigator?.name}</SheetTitle>
+            <SheetDescription className="text-gray-500">
               Navigating to {selectedNavigator?.targetAnchor} • ID: {selectedNavigator?.id}
             </SheetDescription>
           </SheetHeader>
@@ -840,14 +840,14 @@ export default function GuardianConsole() {
             <div className="mt-6 space-y-6">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <div className="text-sm font-medium text-white">Battery Level</div>
+                  <div className="text-sm font-medium text-gray-900">Battery Level</div>
                   <div className="flex items-center gap-2 mt-1">
                     {getBatteryIcon(selectedNavigator.battery)}
-                    <span className="text-lg font-mono text-white">{selectedNavigator.battery}%</span>
+                    <span className="text-lg font-mono text-gray-900">{selectedNavigator.battery}%</span>
                   </div>
                 </div>
                 <div>
-                  <div className="text-sm font-medium text-white">Status</div>
+                  <div className="text-sm font-medium text-gray-900">Status</div>
                   <div className="mt-1">{getStatusBadge(selectedNavigator.status)}</div>
                 </div>
               </div>
@@ -856,11 +856,11 @@ export default function GuardianConsole() {
                 <h4 className="font-medium">Navigation Details</h4>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Target Anchor</span>
+                    <span className="text-gray-500">Target Anchor</span>
                     <span className="font-medium">{selectedNavigator.targetAnchor}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Connected Anchors</span>
+                    <span className="text-gray-500">Connected Anchors</span>
                     <span className="font-medium">{selectedNavigator.connectedAnchors}</span>
                   </div>
                 </div>
@@ -871,8 +871,8 @@ export default function GuardianConsole() {
                 <div className="space-y-2">
                   {Object.entries(selectedNavigator.distances).map(([anchorId, distance]) => (
                     <div key={anchorId} className="flex items-center justify-between text-sm">
-                      <span className="font-mono text-white">{anchorId}</span>
-                      <Badge variant="outline" className="bg-gray-700 border-gray-600 text-gray-200">{distance.toFixed(2)}m</Badge>
+                      <span className="font-mono text-gray-900">{anchorId}</span>
+                      <Badge variant="outline" className="bg-gray-700 border-gray-200 text-gray-200">{distance.toFixed(2)}m</Badge>
                     </div>
                   ))}
                 </div>
@@ -882,12 +882,12 @@ export default function GuardianConsole() {
                 <h4 className="font-medium">Device Information</h4>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Device Name</span>
+                    <span className="text-gray-500">Device Name</span>
                     <span>{selectedNavigator.name}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-400">User ID</span>
-                    <span className="font-mono text-white text-xs">{selectedNavigator.id}</span>
+                    <span className="text-gray-500">User ID</span>
+                    <span className="font-mono text-gray-900 text-xs">{selectedNavigator.id}</span>
                   </div>
                 </div>
               </div>
@@ -898,10 +898,10 @@ export default function GuardianConsole() {
 
       {/* Smart Contract Detail Sheet (keeping as is) */}
       <Sheet open={!!selectedContract} onOpenChange={() => setSelectedContract(null)}>
-        <SheetContent className="w-[400px] sm:w-[540px] bg-gray-900 border-gray-700 text-white">
+        <SheetContent className="w-[400px] sm:w-[540px] bg-white border-gray-200 text-gray-900">
           <SheetHeader>
-            <SheetTitle className="text-white">Contract {selectedContract?.txId}</SheetTitle>
-            <SheetDescription className="text-gray-400">
+            <SheetTitle className="text-gray-900">Contract {selectedContract?.txId}</SheetTitle>
+            <SheetDescription className="text-gray-500">
               {selectedContract?.navigatorId} • {formatTimeAgo(selectedContract?.timestamp || new Date())}
             </SheetDescription>
           </SheetHeader>
@@ -910,11 +910,11 @@ export default function GuardianConsole() {
             <div className="mt-6 space-y-6">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <div className="text-sm font-medium text-white">Status</div>
+                  <div className="text-sm font-medium text-gray-900">Status</div>
                   <div className="mt-1">{getContractStatusBadge(selectedContract.status)}</div>
                 </div>
                 <div>
-                  <div className="text-sm font-medium text-white">QoD Quorum</div>
+                  <div className="text-sm font-medium text-gray-900">QoD Quorum</div>
                   <div className="mt-1">{getQuorumBadge(selectedContract.qodQuorum)}</div>
                 </div>
               </div>
@@ -923,18 +923,18 @@ export default function GuardianConsole() {
                 <h4 className="font-medium">Contract Terms</h4>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Asset</span>
+                    <span className="text-gray-500">Asset</span>
                     <span className="font-medium">{selectedContract.asset}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Price</span>
+                    <span className="text-gray-500">Price</span>
                     <span className="font-medium">
                       {selectedContract.price} {selectedContract.currency}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Navigator</span>
-                    <span className="font-mono text-white">{selectedContract.navigatorId}</span>
+                    <span className="text-gray-500">Navigator</span>
+                    <span className="font-mono text-gray-900">{selectedContract.navigatorId}</span>
                   </div>
                 </div>
               </div>
@@ -944,8 +944,8 @@ export default function GuardianConsole() {
                 <div className="space-y-2">
                   {selectedContract.anchors.map((anchorId) => (
                     <div key={anchorId} className="flex items-center justify-between text-sm">
-                      <span className="font-mono text-white">{anchorId}</span>
-                      <Badge variant="outline" className="bg-gray-700 border-gray-600 text-gray-200">Active</Badge>
+                      <span className="font-mono text-gray-900">{anchorId}</span>
+                      <Badge variant="outline" className="bg-gray-700 border-gray-200 text-gray-200">Active</Badge>
                     </div>
                   ))}
                 </div>
@@ -954,6 +954,13 @@ export default function GuardianConsole() {
           )}
         </SheetContent>
       </Sheet>
+
+      {/* Copyright Notice */}
+      <div className="fixed bottom-4 right-4">
+        <p className="text-xs text-gray-400">
+          © 2025 Nisshinbo Holdings Inc. All rights reserved.
+        </p>
+      </div>
     </div>
   )
 }
