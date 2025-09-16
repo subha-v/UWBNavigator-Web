@@ -2,14 +2,29 @@
 
 Real-time web dashboard for monitoring and visualizing Ultra-Wideband (UWB) tracking data from iOS devices with automatic Bonjour/mDNS device discovery.
 
+## Recent Updates (September 2025)
+
+### Light Mode UI Overhaul
+- **Clean Light Theme**: Converted from dark mode to professional light mode with white backgrounds
+- **Enhanced Typography**: Increased font sizes for better readability (Agent ID: text-lg font-semibold, QoD labels: text-sm)
+- **Improved Visual Design**: Reduced card heights from 100px to 80px for better aesthetics
+- **Better Badge Styling**: Enhanced status and QoD badges with improved padding and typography
+- **Optimized Layout**: Perfect symmetry between anchors and navigators sections
+- **Corporate Branding**: Added Nisshinbo Holdings Inc. copyright notice
+- **iPhone-style Battery Indicators**: Visual battery bars with color-coded status
+- **San Francisco Font**: Uses SF Pro Display/Text for Apple ecosystem consistency
+- **Multi-port Scanning**: Support for device discovery across multiple ports
+- **Anchor-to-Anchor Connections**: Display ground truth data between anchor devices
+
 ## Overview
 
 This web application provides a real-time dashboard interface for the UWB Navigator iOS app, displaying:
 - Active anchor devices and their status
 - Navigator devices and their tracked distances
-- Battery levels and connection states
+- Battery levels and connection states with iPhone-style indicators
 - Distance measurements with centimeter precision
-- Error tracking and analysis
+- Error tracking and analysis with color-coded badges
+- Anchor-to-anchor ground truth data visualization
 
 ## Features
 
@@ -18,10 +33,10 @@ This web application provides a real-time dashboard interface for the UWB Naviga
 - **Role-based Display**: Automatically separates anchors and navigators in appropriate columns
 - **Multi-device Tracking**: Monitor unlimited anchors and navigators simultaneously
 - **Distance Visualization**: Display precise UWB distance measurements
-- **Battery Monitoring**: Track device battery levels
+- **iPhone-style Battery Monitoring**: Visual battery bars with gradient colors
 - **Connection Status**: Visual indicators for device states
 - **Responsive Design**: Works on desktop and tablet displays
-- **Dark Mode Support**: Built-in theme switching
+- **Light Mode Optimized**: Clean, professional light theme with enhanced readability
 
 ## Tech Stack
 
