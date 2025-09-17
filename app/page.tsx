@@ -98,39 +98,7 @@ function calculateError(measured: number, from: string, to: string): {error: num
   return { error, percentError }
 }
 
-// Mock contracts data (keeping as is)
-const mockContracts: SmartContract[] = [
-  {
-    txId: "0xa7b2c9d4",
-    navigatorId: "Akshata",
-    anchors: ["Kitchen", "Meeting Room", "Window"],
-    asset: "Pose attestation | 10s window",
-    price: 12,
-    currency: "USDC",
-    status: "Settled" as const,
-    qodQuorum: "Pass",
-    timestamp: new Date(Date.now() - 45000),
-    dop: 2.3,
-    minAnchors: 3,
-    actualAnchors: 3,
-    robotId: "Akshata",
-  },
-  {
-    txId: "0x3f8e1a6b",
-    navigatorId: "Subha",
-    anchors: ["Kitchen", "Window", "Meeting Room"],
-    asset: "Navigation proof | 30s window",
-    price: 8,
-    currency: "USDC",
-    status: "Executing" as const,
-    qodQuorum: "Pass",
-    timestamp: new Date(Date.now() - 15000),
-    dop: 2.1,
-    minAnchors: 2,
-    actualAnchors: 2,
-    robotId: "Subha",
-  },
-]
+// Smart contracts will be generated dynamically when navigators complete routes
 
 function getStatusBadge(status: string) {
   if (status === "connected" || status === "active")
@@ -260,14 +228,97 @@ export default function GuardianConsole() {
   const [navigatorSearch, setNavigatorSearch] = useState("")
   const [selectedNavigator, setSelectedNavigator] = useState<Navigator | null>(null)
 
-  const [contracts, setContracts] = useState<SmartContract[]>(mockContracts)
+  const [contracts, setContracts] = useState<SmartContract[]>([])
   const [contractSearch, setContractSearch] = useState("")
   const [contractStatusFilter, setContractStatusFilter] = useState("all")
   const [selectedContract, setSelectedContract] = useState<SmartContract | null>(null)
-  
+
   // Expanded card states
   const [expandedAnchor, setExpandedAnchor] = useState<string | null>(null)
   const [expandedNavigator, setExpandedNavigator] = useState<string | null>(null)
+
+  // WebSocket connection
+  const [ws, setWs] = useState<WebSocket | null>(null)
+
+  // Setup WebSocket connection
+  useEffect(() => {
+    const wsUrl = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8000/ws'
+
+    const websocket = new WebSocket(wsUrl)
+
+    websocket.onopen = () => {
+      console.log('✅ WebSocket connected')
+      setConnectionStatus("connected")
+    }
+
+    websocket.onmessage = (event) => {
+      try {
+        const message = JSON.parse(event.data)
+
+        // Handle navigator completion message
+        if (message.type === 'navigator_completed') {
+          const { data } = message
+
+          // Update navigator's QoD score
+          setNavigators(prevNavigators =>
+            prevNavigators.map(nav =>
+              nav.id === data.navigator_id
+                ? { ...nav, qod: data.qod_score }
+                : nav
+            )
+          )
+
+          // Add new smart contract
+          const newContract: SmartContract = {
+            txId: data.contract.txId,
+            robotId: data.navigator_name,
+            anchors: data.contract.anchors,
+            asset: data.contract.asset,
+            price: data.contract.price,
+            currency: data.contract.currency as "credits" | "USDC",
+            status: data.contract.status as "Pending" | "Executing" | "Settled" | "Failed",
+            qodQuorum: data.contract.qodQuorum as "Pass" | "Fail",
+            timestamp: new Date(data.contract.timestamp),
+            dop: data.contract.dop,
+            minAnchors: data.contract.minAnchors,
+            actualAnchors: data.contract.actualAnchors,
+            navigatorId: data.navigator_name
+          }
+
+          setContracts(prevContracts => [newContract, ...prevContracts])
+
+          console.log(`📸 Navigator ${data.navigator_name} completed with QoD: ${data.qod_score}%`)
+        }
+
+        // Handle other message types (initial data, updates, etc.)
+        if (message.type === 'initial' || message.type === 'update') {
+          const { data } = message
+          if (data.anchors) setAnchors(data.anchors)
+          if (data.navigators) setNavigators(data.navigators)
+        }
+      } catch (error) {
+        console.error('Error processing WebSocket message:', error)
+      }
+    }
+
+    websocket.onerror = (error) => {
+      console.error('WebSocket error:', error)
+      setConnectionStatus("error")
+    }
+
+    websocket.onclose = () => {
+      console.log('WebSocket disconnected')
+      setConnectionStatus("disconnected")
+    }
+
+    setWs(websocket)
+
+    return () => {
+      if (websocket.readyState === WebSocket.OPEN) {
+        websocket.close()
+      }
+    }
+  }, [])
 
   // Fetch data from FastAPI server
   useEffect(() => {
