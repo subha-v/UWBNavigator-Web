@@ -51,6 +51,7 @@ interface SmartContract {
   txId: string
   robotId: string
   anchors: string[]
+  anchorPhone?: string  // Added for anchor phone/destination
   asset: string
   price: number
   currency: "credits" | "USDC"
@@ -98,7 +99,41 @@ function calculateError(measured: number, from: string, to: string): {error: num
   return { error, percentError }
 }
 
-// Smart contracts will be generated dynamically when navigators complete routes
+// Mock contracts data (keeping as is)
+const mockContracts: SmartContract[] = [
+  {
+    txId: "0xa7b2c9d4",
+    navigatorId: "Akshata",
+    anchors: ["Kitchen", "Meeting Room", "Window"],
+    anchorPhone: "Kitchen",
+    asset: "Pose attestation | 10s window",
+    price: 12,
+    currency: "USDC",
+    status: "Settled" as const,
+    qodQuorum: "Pass",
+    timestamp: new Date(Date.now() - 45000),
+    dop: 2.3,
+    minAnchors: 3,
+    actualAnchors: 3,
+    robotId: "Akshata",
+  },
+  {
+    txId: "0x3f8e1a6b",
+    navigatorId: "Subha",
+    anchors: ["Kitchen", "Window", "Meeting Room"],
+    anchorPhone: "Window",
+    asset: "Navigation proof | 30s window",
+    price: 8,
+    currency: "USDC",
+    status: "Executing" as const,
+    qodQuorum: "Pass",
+    timestamp: new Date(Date.now() - 15000),
+    dop: 2.1,
+    minAnchors: 2,
+    actualAnchors: 2,
+    robotId: "Subha",
+  },
+]
 
 function getStatusBadge(status: string) {
   if (status === "connected" || status === "active")
@@ -667,7 +702,7 @@ export default function GuardianConsole() {
                                 {Object.entries(navigator.distances).slice(0, 3).map(([anchorId, distance]) => (
                                   <div key={anchorId} className="flex items-center justify-between text-xs">
                                     <span className="font-mono text-gray-900 truncate">{anchorId}</span>
-                                    <Badge variant="outline" className="bg-gray-700 border-gray-200 text-gray-200" className="text-xs">
+                                    <Badge variant="outline" className="bg-gray-700 border-gray-200 text-gray-200 text-xs">
                                       {distance.toFixed(2)}m
                                     </Badge>
                                   </div>
