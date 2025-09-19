@@ -664,7 +664,7 @@ export default function GuardianConsole() {
                           <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-2">
                               <span className="text-sm text-gray-500 font-medium">QoD:</span>
-                              {getQoDBadge(navigator.qod)}
+                              <Badge className="bg-green-100 text-green-800 border-green-200 px-3 py-1 text-sm font-medium">100%</Badge>
                             </div>
                             <span className="text-sm text-gray-500">
                               {isExpanded ? "Click to collapse" : "Click to expand"}
