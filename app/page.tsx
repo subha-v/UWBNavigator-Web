@@ -366,27 +366,40 @@ export default function GuardianConsole() {
         const response = await fetch(`${apiUrl}/api/all`, {
           signal: AbortSignal.timeout(2000)
         })
-        
+
         if (response.ok) {
           const data = await response.json()
-          
+
           // Update anchors - only devices with role "anchor"
           const anchorDevices = data.anchors || []
           setAnchors(anchorDevices)
-          
+
           // Update navigators - only devices with role "navigator"
           const navigatorDevices = data.navigators || []
           setNavigators(navigatorDevices)
-          
+
           // Update connection status
           setConnectionStatus(data.connection_count > 0 ? "connected" : "disconnected")
           setLastUpdated(new Date())
-          
+
           console.log(`✅ Connected to FastAPI server - ${data.connection_count} devices online`)
           console.log(`   Anchors: ${anchorDevices.length}, Navigators: ${navigatorDevices.length}`)
         } else {
           console.error('Failed to fetch from FastAPI server')
           setConnectionStatus("error")
+        }
+
+        // Also fetch smart contracts from our API endpoint
+        const contractsResponse = await fetch('/api/navigator-update', {
+          signal: AbortSignal.timeout(2000)
+        })
+
+        if (contractsResponse.ok) {
+          const contractData = await contractsResponse.json()
+          if (contractData.contracts && contractData.contracts.length > 0) {
+            setContracts(contractData.contracts)
+            console.log(`📄 Loaded ${contractData.contracts.length} smart contracts`)
+          }
         }
       } catch (error) {
         console.error('Error connecting to FastAPI server:', error)
