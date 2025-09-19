@@ -381,18 +381,8 @@ export default function GuardianConsole() {
           setConnectionStatus("error")
         }
 
-        // Also fetch smart contracts from our API endpoint
-        const contractsResponse = await fetch('/api/navigator-update', {
-          signal: AbortSignal.timeout(2000)
-        })
-
-        if (contractsResponse.ok) {
-          const contractData = await contractsResponse.json()
-          if (contractData.contracts && contractData.contracts.length > 0) {
-            setContracts(contractData.contracts)
-            console.log(`📄 Loaded ${contractData.contracts.length} smart contracts`)
-          }
-        }
+        // Removed fetching contracts from API endpoint to prevent duplicates
+        // Contracts are now only received via WebSocket in real-time
       } catch (error) {
         console.error('Error connecting to FastAPI server:', error)
         setConnectionStatus("disconnected")
