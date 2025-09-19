@@ -291,38 +291,30 @@ export default function GuardianConsole() {
         const message = JSON.parse(event.data)
 
         // Handle navigator completion message
-        if (message.type === 'navigator_completed') {
-          const { data } = message
-
-          // Update navigator's QoD score
-          setNavigators(prevNavigators =>
-            prevNavigators.map(nav =>
-              nav.id === data.navigator_id
-                ? { ...nav, qod: data.qod_score }
-                : nav
-            )
-          )
+        if (message.type === 'navigator_completed' && message.contract) {
+          const contract = message.contract
 
           // Add new smart contract
           const newContract: SmartContract = {
-            txId: data.contract.txId,
-            robotId: data.navigator_name,
-            anchors: data.contract.anchors,
-            asset: data.contract.asset,
-            price: data.contract.price,
-            currency: data.contract.currency as "credits" | "USDC",
-            status: data.contract.status as "Pending" | "Executing" | "Settled" | "Failed",
-            qodQuorum: data.contract.qodQuorum as "Pass" | "Fail",
-            timestamp: new Date(data.contract.timestamp),
-            dop: data.contract.dop,
-            minAnchors: data.contract.minAnchors,
-            actualAnchors: data.contract.actualAnchors,
-            navigatorId: data.navigator_name
+            txId: contract.txId,
+            navigatorId: contract.navigatorName || contract.navigatorId,
+            robotId: contract.navigatorName || contract.navigatorId,
+            anchorPhone: contract.anchorPhone,
+            anchors: [contract.anchorPhone], // Use anchor destination as anchors array
+            asset: "Navigation completion",
+            price: contract.price,
+            currency: contract.currency as "credits" | "USDC",
+            status: contract.status as "Pending" | "Executing" | "Settled" | "Failed",
+            qodQuorum: "Pass",
+            timestamp: new Date(contract.timestamp),
+            dop: 0,
+            minAnchors: 1,
+            actualAnchors: 1,
           }
 
           setContracts(prevContracts => [newContract, ...prevContracts])
 
-          console.log(`📸 Navigator ${data.navigator_name} completed with QoD: ${data.qod_score}%`)
+          console.log(`📸 Navigator ${contract.navigator_name} completed at ${contract.destination}`)
         }
 
         // Handle other message types (initial data, updates, etc.)
