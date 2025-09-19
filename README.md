@@ -2,7 +2,14 @@
 
 Real-time web dashboard for monitoring and visualizing Ultra-Wideband (UWB) tracking data from iOS devices with automatic Bonjour/mDNS device discovery.
 
-## Recent Updates (September 2025)
+## Recent Updates (December 2025)
+
+### Smart Contract Integration & Navigation Completion
+- **Navigation Completion Flow**: Added support for "Reached Destination" button in iOS app
+- **Smart Contract Creation**: Automatic contract generation when navigator reaches destination
+- **WebSocket Real-time Updates**: Live smart contract updates via WebSocket connection
+- **Fixed WebSocket Message Handling**: Corrected message structure for navigator completion events
+- **Contract Dashboard**: Display smart contracts with navigator, destination, price, and status
 
 ### Light Mode UI Overhaul
 - **Clean Light Theme**: Converted from dark mode to professional light mode with white backgrounds
